@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rental Car Service</title>
+    <style>
+        :root {
+            --bg: #0b1021;
+            --panel: rgba(255, 255, 255, 0.08);
+            --panel-strong: rgba(255, 255, 255, 0.12);
+            --accent: #ffbd00;
+            --accent2: #00d4ff;
+            --text: #f7f7ff;
+            --muted: #cfd7f5;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Inter", "Segoe UI", Arial, sans-serif;
+            color: var(--text);
+            background: radial-gradient(circle at 15% 10%, #192b66 0%, #0d1336 30%, #080a17 100%);
+            background-attachment: fixed;
+            padding: 0 1rem 2rem;
+            animation: pulseBg 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseBg {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+
+        header {
+            text-align: center;
+            margin: 1rem auto;
+            padding: 2rem 1rem;
+            max-width: 900px;
+            border-radius: 24px;
+            background: linear-gradient(125deg, rgba(255,189,0,0.22), rgba(0,212,255,0.18));
+            border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 14px 45px rgba(0,0,0,0.35);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(4px);
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-7px); }
+        }
+
+        header h1 { margin: 0 0 0.5rem; font-size: clamp(1.5rem, 3vw, 2.6rem); letter-spacing: 0.4px; }
+        header p { margin: 0; color: #f2e9ca; font-weight: 500; }
+
+        section {
+            margin: 1rem auto;
+            padding: 1.2rem;
+            border-radius: 20px;
+            max-width: 1000px;
+            background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #car-types h2, #rental-form h2, #damage-form h2 { margin-top: 0; letter-spacing: 0.6px; }
+
+        .car-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+
+        .car {
+            background: linear-gradient(140deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 0.9rem;
+            text-align: center;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .car:hover {
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.3);
+        }
+
+        .car::before {
+            content: '';
+            position: absolute;
+            height: 120%;
+            width: 120%;
+            left: -10%;
+            top: -15%;
+            background: radial-gradient(circle, rgba(255,255,255,0.35), rgba(255,255,255,0));
+            opacity: 0;
+            transform: scale(0.85);
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+        }
+
+        .car:hover::before { opacity: 0.35; }
+
+        .car img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 0.6rem;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        form {
+            max-width: 460px;
+            margin: 0 auto;
+            display: grid;
+            gap: 0.6rem;
+        }
+
+        label {
+            font-size: 0.95rem;
+            color: #e4e9ff;
+            margin-bottom: 0;
+        }
+
+        input, select, button, p {
+            font: inherit;
+        }
+
+        input, select {
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.2);
+            color: #f2f2f6;
+            padding: 0.65rem 0.75rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: rgba(255,189,0,0.9);
+            box-shadow: 0 0 0 3px rgba(255,189,0,0.15);
+        }
+
+        button {
+            cursor: pointer;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(120deg, #ffbd00, #00d4ff);
+            color: #0f172a;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            padding: 0.75rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 212, 255, 0.25);
+        }
+
+        #rentalCost, #fineAmount {
+            margin: 0.4rem 0 0;
+            font-weight: 700;
+            color: #d1f5f8;
+            background: rgba(0,0,0,0.2);
+            padding: 0.5rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.15);
+            animation: poptext 0.35s ease forwards;
+        }
+
+        @keyframes poptext {
+            from { transform: scale(0.97); opacity: 0.3; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @media (max-width: 800px) {
+            body { padding: 0.5rem 0.75rem 1.2rem; }
+            .car img { height: 130px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to Our Five Star Rental Car Service</h1>
+        <p>Rent a car at K800 per day. Damages will incur fines equal to the cost of repair.</p>
+    </header>
+
+    <section id="car-types">
+        <h2>Available Car Types</h2>
+        <div class="car-list">
+            <div class="car">
+                <h3>Land Cruiser</h3>
+                <img src ="C:\Users\260001\Documents\web\img\lc.webp">
+                <p>Comfortable for city driving and off-road adventures.</p>
+                <p>Rate: K800/day</p>
+            </div>
+            <div class="car">
+                <h3>SUV</h3>
+                <img src ="C:\Users\260001\Documents\web\img\suv.jpg">
+                <p>Spacious for families.</p>
+                <p>Rate: K800/day</p>
+            </div>
+            <div class="car">
+                <h3>Truck</h3>
+                <img src ="C:\Users\260001\Documents\web\img\tk.webp">
+                <p>Perfect for hauling cargo.</p>
+                <p>Rate: K800/day</p>
+            </div>
+            <div class="car">
+                <h3>Coaster Bus</h3>
+                <img src ="C:\Users\260001\Documents\web\img\cb.jpg">
+                <p>Perfect for group transportation.</p>
+                <p>Rate: K800/day</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="rental-form">
+        <h2>Rent a Car</h2>
+        <form id="rentalForm">
+            <label for="carType">Select Car Type:</label>
+            <select id="carType" name="carType">
+                <option value="sedan">Sedan</option>
+                <option value="suv">SUV</option>
+                <option value="truck">Truck</option>
+                <option value="sports">Sports Car</option>
+            </select>
+
+            <label for="days">Number of Days:</label>
+            <input type="number" id="days" name="days" min="1" required>
+
+            <button type="button" onclick="calculateRental()">Calculate Rental Cost</button>
+            <p id="rentalCost"></p>
+        </form>
+    </section>
+
+    <section id="damage-form">
+        <h2>Report Damage</h2>
+        <form id="damageForm">
+            <label for="damageCost">Damage Cost (in K):</label>
+            <input type="number" id="damageCost" name="damageCost" min="0" step="0.01" required>
+
+            <button type="button" onclick="calculateFine()">Calculate Fine</button>
+            <p id="fineAmount"></p>
+        </form>
+    </section>
+
+    <script>
+        function calculateRental() {
+            const days = parseInt(document.getElementById('days').value);
+            if (isNaN(days) || days < 1) {
+                alert('Please enter a valid number of days.');
+                return;
+            }
+            const rate = 800;
+            const total = days * rate;
+            document.getElementById('rentalCost').textContent = `Total Cost: K${total}`;
+        }
+
+        function calculateFine() {
+            const damage = parseFloat(document.getElementById('damageCost').value);
+            if (isNaN(damage) || damage < 0) {
+                alert('Please enter a valid damage cost.');
+                return;
+            }
+            document.getElementById('fineAmount').textContent = `Fine: K${damage}`;
+        }
+    </script>
+</body>
+</html>
